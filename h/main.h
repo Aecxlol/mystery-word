@@ -4,6 +4,12 @@
 #include <string>
 #include <vector>
 
+// Scoreboard related
+unsigned int gameId = 0;
+std::vector<int> scores;
+std::vector<std::string> gameType;
+std::vector<std::string> wordToGuessScoreboard;
+
 void displayMainMenu();
 void loadGame(int playerNumber);
 void loadSinglePlayerGame();

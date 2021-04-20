@@ -73,6 +73,7 @@ void displayMainMenu()
                     break;
 
                 case 3:
+                    cout << endl << "A bientot !" << endl << endl;
                     exit(EXIT_SUCCESS);
                     break;
                 }
@@ -87,6 +88,7 @@ void displayMainMenu()
             break;
 
         case 3:
+            cout << endl << "A bientot !" << endl << endl;
             exit(EXIT_SUCCESS);
             break;
         }
@@ -116,6 +118,9 @@ void loadSinglePlayerGame()
     unsigned int random = 0;
     unsigned int counter = 0;
     unsigned int userChoiceAfterWinning = 0;
+
+    gameId += 1;
+    gameType.push_back("Solo");
     
     cout << endl << "- Mode solo -" << endl;
     cout << "*Chargement du dictionnaire*" << endl;
@@ -139,6 +144,7 @@ void loadSinglePlayerGame()
             if (counter == random)
             {
                 wordToFind = line;
+                wordToGuessScoreboard.push_back(wordToFind);
                 for (int i = 0; i < line.length(); i++)
                 {
                     randomWord.push_back(line[i]);
@@ -166,9 +172,14 @@ void loadMultiPlayerGame()
     string userAnswer;
     vector<char> wordToGuess;
 
+    gameId += 1;
+    gameType.push_back("Multi");
+
     cout << endl << "- Mode multi -" << endl;
     cout << endl << "Saisissez un mot : ";
     cin >> wordToFind;
+
+    wordToGuessScoreboard.push_back(wordToFind);
 
     for (unsigned int i = 0; i < wordToFind.length(); i++)
     {
@@ -200,9 +211,40 @@ string shuffleWord(vector<char> &word)
 
 void displayScoreboard()
 {
-    cout << "|---------------------------------------|" << endl;
-    cout << "|--------------SCOREBOARD---------------|" << endl;
-    cout << "|---------------------------------------|" << endl;
+    double gameWon = 0.0;
+    double gameLost = 0.0;
+    double ratio = 0.0;
+
+    cout << endl << "- Tableau des scores -" << endl;
+
+    if(gameId == 0)
+    {
+        cout << endl << "Aucune partie n'a encore ete jouee !" << endl;
+    } else {
+        cout << "|--------------------------------------------------------------------|" << endl;
+        cout << "|-----------------------------SCOREBOARD-----------------------------|" << endl;
+        cout << "|--------------------------------------------------------------------|" << endl;
+        cout << "|--Partie--|---Score----|-----Statut----|-----Type-----|-----Mot-----|" << endl;
+
+        for (int i = 0; i < gameId; i++)
+        {
+            cout << "|    N " << i + 1; 
+            cout << "   | " << scores[i] << " point(s)";
+            cout << " |     " << (scores[i] > 0 ? " Win " : " Loss") << "     |" ;
+            cout << "     " << gameType[i] << "     |";
+            cout << "    " << wordToGuessScoreboard[i] << "    |" << endl;
+
+            scores[i] > 0 ? gameWon += 1.0 : gameLost += 1.0;
+        }
+        ratio = (gameWon / gameId) * 100;
+        cout << "|--------------------------------------------------------------------|" << endl << endl;
+        cout << "Vos statistiques :" << endl;
+        cout << "Nombre de partie(s) gagnee(s) : " << gameWon << endl;
+        cout << "Nombre de partie(s) perdue(s) : " << gameLost << endl;
+        cout << "Pourcentage de victoire(s) : " << ratio << "%" << endl << endl;
+    }
+
+    displayMainMenu();
 }
 
 void askUserWhatIsTheWord(string userAnswer, string wordToFind, string randomWordShuffled)
@@ -230,8 +272,10 @@ void askUserWhatIsTheWord(string userAnswer, string wordToFind, string randomWor
     }
 
     if(userLives > 0){
+        scores.push_back(userLives);
         cout << endl << "Bravo, le mot a trouver etait bien : " << wordToFind << " !" << endl << endl;
     } else {
+        scores.push_back(userLives);
         cout << endl << "Vous avez perdu, le mot a trouver etait : " << wordToFind << " :(" << endl << endl; 
     }
 }
@@ -258,6 +302,7 @@ void displayMenuAfterWinning(bool isSinglePlayerGame)
         break;
 
     case 3:
+        cout << endl << "A bientot !" << endl << endl;
         exit(EXIT_SUCCESS);
         break;
     }
