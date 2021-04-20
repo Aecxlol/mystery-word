@@ -10,5 +10,7 @@ void loadSinglePlayerGame();
 void loadMultiPlayerGame();
 void displayScoreboard();
 std::string shuffleWord(std::vector<char> & word);
+void askUserWhatIsTheWord(std::string userAnswer, std::string wordToFind, std::string randomWordShuffled);
+void displayMenuAfterWinning(bool isSinglePlayerGame);
 
 #endif

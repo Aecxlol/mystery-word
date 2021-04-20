@@ -22,8 +22,8 @@ int main(int argc, char const *argv[])
 
 void displayMainMenu()
 {
-    int choice = 0;
-    int firstTimeInMenu = 0;
+    unsigned int choice = 0;
+    unsigned int firstTimeInMenu = 0;
 
     while (choice < 1 || choice > 2)
     {
@@ -45,8 +45,8 @@ void displayMainMenu()
         {
         case 1:
         {
-            int choicePlayer = 0;
-            int firstTimeInSubMenu = 0;
+            unsigned int choicePlayer = 0;
+            unsigned int firstTimeInSubMenu = 0;
 
             while (choicePlayer < 1 || choicePlayer > 2)
             {
@@ -108,16 +108,15 @@ void loadSinglePlayerGame()
     string const dictionary("misc/dico.txt");
     ifstream fileStream(dictionary.c_str());
     string line;
-    vector<char> randomWord;
     string wordToFind;
     string randomWordShuffled;
-    int wordsNumber = 0;
-    int random = 0;
-    int counter = 0;
     string userAnswer;
-    int userAttempt = 0;
-    int userChoiceAfterWinning = 0;
-
+    vector<char> randomWord;
+    unsigned int wordsNumber = 0;
+    unsigned int random = 0;
+    unsigned int counter = 0;
+    unsigned int userChoiceAfterWinning = 0;
+    
     cout << endl << "- Mode solo -" << endl;
     cout << "*Chargement du dictionnaire*" << endl;
 
@@ -149,43 +148,9 @@ void loadSinglePlayerGame()
         }
         randomWordShuffled = shuffleWord(randomWord);
 
-        while (userAnswer != wordToFind)
-        {
-            cout << endl << "Quel est ce mot ? " << randomWordShuffled << endl;
-            cout << "Votre reponse : ";
-            cin >> userAnswer;
-            userAttempt++;
-            if (userAnswer != wordToFind)
-            {
-                if (userAttempt > 0)
-                {
-                    cout << "Ce n'est pas le mot !" << endl;
-                }
-            }
-        }
+        askUserWhatIsTheWord(userAnswer, wordToFind, randomWordShuffled);
 
-        cout << endl << "Bravo, le mot a trouver etait bien : " << wordToFind << " !" << endl << endl;
-        cout << "Que voulez-vous faire ?" << endl;
-        cout << "1 - Revenir au menu principal" << endl;
-        cout << "2 - Rejouer" << endl;
-        cout << "3 - Quitter" << endl;
-        cout << "Votre choix ? ";
-        cin >> userChoiceAfterWinning;
-
-        switch (userChoiceAfterWinning)
-        {
-        case 1:
-            displayMainMenu();
-            break;
-
-        case 2:
-            loadSinglePlayerGame();
-            break;
-
-        case 3:
-            exit(EXIT_SUCCESS);
-            break;
-        }
+        displayMenuAfterWinning(true);
     }
     else
     {
@@ -196,29 +161,32 @@ void loadSinglePlayerGame()
 
 void loadMultiPlayerGame()
 {
-    string word;
+    string wordToFind;
     string wordShuffled;
+    string userAnswer;
     vector<char> wordToGuess;
 
     cout << endl << "- Mode multi -" << endl;
     cout << endl << "Saisissez un mot : ";
-    cin >> word;
+    cin >> wordToFind;
 
-    for (int i = 0; i < word.length(); i++)
+    for (unsigned int i = 0; i < wordToFind.length(); i++)
     {
-        wordToGuess.push_back(word[i]);
+        wordToGuess.push_back(wordToFind[i]);
     }
 
     wordShuffled = shuffleWord(wordToGuess);
 
+    askUserWhatIsTheWord(userAnswer, wordToFind, wordShuffled);
 
+    displayMenuAfterWinning(false);
 }
 
 string shuffleWord(vector<char> &word)
 {
     string shuffledWord;
-    int wordSize = word.size();
-    int random = 0;
+    unsigned int wordSize = word.size();
+    unsigned int random = 0;
 
     while (shuffledWord.length() != wordSize)
     {
@@ -235,4 +203,62 @@ void displayScoreboard()
     cout << "|---------------------------------------|" << endl;
     cout << "|--------------SCOREBOARD---------------|" << endl;
     cout << "|---------------------------------------|" << endl;
+}
+
+void askUserWhatIsTheWord(string userAnswer, string wordToFind, string randomWordShuffled)
+{
+    unsigned int userAttempt = 0;
+    unsigned int userLives = 5;
+
+    cout << endl << "Vous avez " << userLives << " vies." << endl;
+
+    while (userAnswer != wordToFind && userLives > 0)
+    {
+        cout << endl << "Quel est ce mot ? " << randomWordShuffled << endl;
+        cout << "Votre reponse : ";
+        cin >> userAnswer;
+        userAttempt++;
+        if (userAnswer != wordToFind)
+        {
+            if (userAttempt > 0)
+            {
+                userLives--;
+                cout << "Ce n'est pas le mot !" << endl;
+                cout << "Il ne vous reste plus que " << userLives << " vies." << endl;
+            }
+        }
+    }
+
+    if(userLives > 0){
+        cout << endl << "Bravo, le mot a trouver etait bien : " << wordToFind << " !" << endl << endl;
+    } else {
+        cout << endl << "Vous avez perdu, le mot a trouver etait : " << wordToFind << " :(" << endl << endl; 
+    }
+}
+
+void displayMenuAfterWinning(bool isSinglePlayerGame)
+{
+    unsigned int userChoiceAfterWinning;
+
+    cout << "Que voulez-vous faire ?" << endl;
+    cout << "1 - Revenir au menu principal" << endl;
+    cout << "2 - Rejouer" << endl;
+    cout << "3 - Quitter" << endl;
+    cout << "Votre choix ? ";
+    cin >> userChoiceAfterWinning;
+
+    switch (userChoiceAfterWinning)
+    {
+    case 1:
+        displayMainMenu();
+        break;
+
+    case 2:
+        (isSinglePlayerGame) ? loadSinglePlayerGame() : loadMultiPlayerGame();
+        break;
+
+    case 3:
+        exit(EXIT_SUCCESS);
+        break;
+    }
 }
