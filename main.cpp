@@ -5,7 +5,13 @@
 #include <cstdlib>
 #include "h/main.h"
 
-using namespace std;
+using std::cout;
+using std::cin;
+using std::endl;
+using std::string;
+using std::ifstream;
+using std::vector;
+using std::ios;
 
 int main(int argc, char const *argv[])
 {
